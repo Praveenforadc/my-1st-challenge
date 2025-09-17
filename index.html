@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Typing Speed Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            padding: 40px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        #paragraph {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        #inputBox {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+        }
+        #startBtn, #restartBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #results {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Typing Speed Tester</h2>
+    <p id="paragraph">Click "Start" to begin typing test.</p>
+    <textarea id="inputBox" rows="5" disabled placeholder="Start typing here..."></textarea><br>
+    <button id="startBtn">Start</button>
+    <button id="restartBtn" style="display:none;">Restart</button>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    const paragraphs = [
+        "The quick brown fox jumps over the lazy dog.",
+        "Typing tests are a fun way to improve your speed and accuracy.",
+        "Practice makes perfect when it comes to keyboard skills.",
+        "Consistency and patience are key to mastering typing.",
+        "Speed is important, but accuracy is even more critical in typing."
+    ];
+
+    const paragraphEl = document.getElementById("paragraph");
+    const inputBox = document.getElementById("inputBox");
+    const startBtn = document.getElementById("startBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const resultsEl = document.getElementById("results");
+
+    let startTime, endTime, selectedText;
+
+    startBtn.addEventListener("click", () => {
+        selectedText = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+        paragraphEl.textContent = selectedText;
+        inputBox.disabled = false;
+        inputBox.value = "";
+        inputBox.focus();
+        startTime = new Date().getTime();
+        resultsEl.textContent = "";
+        startBtn.style.display = "none";
+        restartBtn.style.display = "inline";
+    });
+
+    inputBox.addEventListener("input", () => {
+        const typedText = inputBox.value;
+
+        if (typedText === selectedText) {
+            endTime = new Date().getTime();
+            const timeTakenInSeconds = (endTime - startTime) / 1000;
+            const wordCount = selectedText.split(" ").length;
+            const wpm = Math.round((wordCount / timeTakenInSeconds) * 60);
+
+            const errors = countErrors(typedText, selectedText);
+
+            resultsEl.innerHTML = `
+                ✅ <strong>Completed!</strong><br>
+                🕒 Time: <strong>${timeTakenInSeconds.toFixed(2)} seconds</strong><br>
+                ⌨️ WPM: <strong>${wpm}</strong><br>
+                ❌ Errors: <strong>${errors}</strong>
+            `;
+            inputBox.disabled = true;
+        }
+    });
+
+    restartBtn.addEventListener("click", () => {
+        paragraphEl.textContent = "Click \"Start\" to begin typing test.";
+        inputBox.value = "";
+        inputBox.disabled = true;
+        resultsEl.textContent = "";
+        startBtn.style.display = "inline";
+        restartBtn.style.display = "none";
+    });
+
+    function countErrors(input, target) {
+        let errors = 0;
+        for (let i = 0; i < target.length; i++) {
+            if (input[i] !== target[i]) {
+                errors++;
+            }
+        }
+        return errors;
+    }
+</script>
+
+</body>
+</html>
